@@ -1,0 +1,11 @@
+Package: cdcstats
+Type: Package
+Title: 疾控中心传染病统计程序包 (CDC STATS)
+Version: 0.1.0
+Author: 景钦隆，广州市疾病预防控制中心
+Maintainer: 景钦隆 <jingqinlong@sina.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL
+Encoding: UTF-8
+LazyData: true
