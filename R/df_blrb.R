@@ -3,10 +3,11 @@
 ##### 此程序用于登革热每日新增病例及累计统计
 ##### 用法: blrb <- df_blrb(mdf=mdf,today=Sys.Date())
 
-library(reshape)
+
 df_blrb <- function(mdf=mdf,today=Sys.Date()){ #病例日报统计函数
     ##### 此程序用于截至前一日本地感染登革热病例情况 #####
     ##### 景钦隆，2014年7月26日撰写，广州市疾控中心  #####
+    library(reshape)
     mdf$区县 <- substr(mdf$现住详细地址,1,3)
     mdf$街道 <- substr(mdf$现住详细地址,4,6)
     mdf$cases <- 1
