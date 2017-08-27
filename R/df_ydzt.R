@@ -9,8 +9,9 @@
 
 ### 用法：ydzt <- df_ydzt(mdf=mdf,currentdate=Sys.Date())
 
-library(plyr)
+
 df_ydzt <- function(mdf=mdf,currentdate=Sys.Date()){ #疫点状态统计函数
+    library(plyr)
     mdf.cf <- mdf[duplicated(mdf$姓名),]
     ##### 查找重名病例 ##########
     mdf.cf$姓名  ### 重名病例名单
