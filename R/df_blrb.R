@@ -40,7 +40,7 @@ df_blrb <- function(mdf=mdf,today=Sys.Date()){ #病例日报统计函数
     colsum.df$街道 <- " "
     colsum.df$区县 <- "合计"
     final.final <- rbind(final.sort,colsum.df)
-    write.csv(final.final,paste0("登革热日报表",today,".csv"),row.names = FALSE)
+    write.csv(final.final,paste0("D:/","登革热日报表",today,".csv"),row.names = FALSE)
     shell.exec(paste0("D:/","登革热日报表",today,".csv"))
     return(final.final)
 }
