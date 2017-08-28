@@ -2,6 +2,8 @@
 #### 街镇暴发信号探测函数
 #### 景钦隆，广州市疾病预防控制中心
 #### 2017年8月28日
+#### 用法：jzcases <- subset(mdf,街镇=="南源街")
+####       bfd <- df_bfd(jzcases=jzcases)
 
 df_bfd <- function(jzcases=jzcases){ # 是否年内曾是暴发点判断函数
   jzcasesaggr <- aggregate(编号~发病日期,data=jzcases,length)
