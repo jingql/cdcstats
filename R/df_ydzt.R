@@ -7,16 +7,16 @@
 ### 其中疫情状态、疫情强度、疫情趋势以15天（登革热最长潜伏期）为时间聚集性探测期限
 ### "暴发点"变量为年内是否曾达到暴发疫情标准（按发病日期计算，15天内发病超过3例）
 
-### 用法：ydzt <- df_ydzt(mdf=mdf,currentdate=Sys.Date())
+### 用法：市级：ydzt <- df_ydzt(mdf=mdf,currentdate=Sys.Date())
+###       区级： ydzt <- df_ydzt(mdf=mdf,currentdate=Sys.Date(),user="county")
 
 
-df_ydzt <- function(mdf=mdf,currentdate=Sys.Date()){ #疫点状态统计函数
+df_ydzt <- function(mdf=mdf,currentdate=Sys.Date(),user="city"){ #疫点状态统计函数
     library(plyr)
     mdf.cf <- mdf[duplicated(mdf$姓名),]
-    ##### 查找重名病例 ##########
-    mdf.cf$姓名  ### 重名病例名单
-    mdf$区县 <- substr(mdf$现住详细地址,1,3)
-    mdf$街道 <- substr(mdf$现住详细地址,4,6)
+    # mdf$区县 <- substr(mdf$现住详细地址,1,3)
+    # mdf$街道 <- substr(mdf$现住详细地址,4,6)
+    if (user=="county") {mdf$区县 <- mdf$街道; mdf$街道<-mdf$居委}
     mdf$cases <- 1
     ydfz <- function(x){ifelse(x>25,"结束","持续")}
     ydzt <- ddply(mdf,c("区县","街道"),summarize,cumcases=length(发病日期)
@@ -28,28 +28,6 @@ df_ydzt <- function(mdf=mdf,currentdate=Sys.Date()){ #疫点状态统计函数
     ydzt.st <- ydzt[order(ydzt$区县,-ydzt$cumcases),]
     count=ydzt.st[,2]
     ydzt.st$outbreak=ydzt.st$frequency=ydzt.st$trend=rep(0,length(count))
-    bfd <- function(jzcases=jzcases){ # 是否年内曾是暴发点判断函数
-                    jzcasesaggr <- aggregate(编号~发病日期,data=jzcases,length)
-                    jzcasesaggr <- jzcasesaggr[order(as.Date(jzcasesaggr$发病日期)),]
-			  if (nrow(jzcasesaggr)>1){
-                        ybfd <- ""
-                        for (i in 1:(nrow(jzcasesaggr)-1)){
-                             if (ybfd=="是") break
-                             for (j in (i+1):nrow(jzcasesaggr)){
-                             intervalcases <- subset(jzcasesaggr,(as.Date(发病日期)>=as.Date(jzcasesaggr[i,1])) & (as.Date(发病日期)<=as.Date(jzcasesaggr[j,1])))
-                             if ((nrow(intervalcases)>=3) & ((as.Date(jzcasesaggr[j,1])-as.Date(jzcasesaggr[i,1]))<=15)){
-                                 ybfd <- "是"
-                                 break
-                             } else {
-                                  ybfd <- "否"
-                             }}
-                         }
-                      }
-                      if(nrow(jzcasesaggr)<=1 & jzcasesaggr[1,2] < 3) {ybfd <- "否"}
-                      if(nrow(jzcasesaggr)<=1 & jzcasesaggr[1,2] >= 3 ) {ybfd <- "是"}
-                      return(ybfd)
-             }
-
     for(i in 1:length(count)){
         case1=subset(mdf,街道==count[i])
         case2=subset(case1,as.Date(case1$网络报告时间)>=(currentdate-15)) #发病日期与网络报告时间变换
@@ -64,7 +42,7 @@ df_ydzt <- function(mdf=mdf,currentdate=Sys.Date()){ #疫点状态统计函数
         ydzt.st$trend[i]=ifelse(nrow(case2)>nrow(case3),"上升",ifelse(nrow(case2)<nrow(case3),"下降","持平"))
         ydzt.st$curr15days[i] = nrow(case2)
         ydzt.st$past15days[i] = nrow(case3)
-        ydzt.st$bfd[i] = bfd(case1)
+        ydzt.st$bfd[i] = df_bfd(case1)
     }
     ydzt.st <- ydzt.st[,c("区县","街道","cumcases","firstdate","lastdate","bfd","flinterval","slinterval","ssinterval",
                           "frequency","ydfz","firstreportdate","lastreportdate","flreportinterval","outbreak","trend","curr15days","past15days")]
@@ -81,6 +59,7 @@ df_ydzt <- function(mdf=mdf,currentdate=Sys.Date()){ #疫点状态统计函数
     ydzt.st$首报日期 <- format(ydzt.st$首报日期,"%m-%d")
     ydzt.st$末报日期 <- format(ydzt.st$末报日期,"%m-%d")
     ydzt.st$末首报间隔 <- as.numeric(ydzt.st$末首报间隔)
+    if (user=="county") {names(ydzt.st)[1,2] <- c("街道","居委")}
     write.csv(ydzt.st,paste0("D:/","登革热疫点状态",currentdate,".csv"),row.names = FALSE)
     shell.exec(paste0("D:/","登革热疫点状态",currentdate,".csv"))
     return(ydzt.st)
