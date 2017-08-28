@@ -1,15 +1,17 @@
 
 ##### 景钦隆，2017年8月25日撰写，广州市疾控中心  #####
 ##### 此程序用于登革热每日新增病例及累计统计
-##### 用法: blrb <- df_blrb(mdf=mdf,today=Sys.Date())
+##### 用法: 市级：blrb <- df_blrb(mdf=mdf,today=Sys.Date())
+#####       区级： blrb <- df_blrb(mdf=mdf,today=Sys.Date(),user="city")
 
 
-df_blrb <- function(mdf=mdf,today=Sys.Date()){ #病例日报统计函数
+df_blrb <- function(mdf=mdf,today=Sys.Date(),user="city"){ #病例日报统计函数
     ##### 此程序用于截至前一日本地感染登革热病例情况 #####
     ##### 景钦隆，2014年7月26日撰写，广州市疾控中心  #####
     library(reshape)
-    mdf$区县 <- substr(mdf$现住详细地址,1,3)
-    mdf$街道 <- substr(mdf$现住详细地址,4,6)
+    # mdf$区县 <- substr(mdf$现住详细地址,1,3)
+    # mdf$街道 <- substr(mdf$现住详细地址,4,6)
+    if (user=="county") {mdf$区县 <- mdf$街道; mdf$街道<-mdf$居委}
     mdf$cases <- 1
     hz <- aggregate(cases~区县+街道,length,data=mdf)
     mdf.rq <- mdf[c("区县","街道","性别","职业","发病日期","网络报告时间","病例分类","报告单位","cases")]
@@ -40,6 +42,7 @@ df_blrb <- function(mdf=mdf,today=Sys.Date()){ #病例日报统计函数
     colsum.df$街道 <- " "
     colsum.df$区县 <- "合计"
     final.final <- rbind(final.sort,colsum.df)
+    if (user=="county") {names(final.final)[c(1,2)] <- c("街道","居委")}
     write.csv(final.final,paste0("D:/","登革热日报表",today,".csv"),row.names = FALSE)
     shell.exec(paste0("D:/","登革热日报表",today,".csv"))
     return(final.final)

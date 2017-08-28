@@ -59,7 +59,7 @@ df_ydzt <- function(mdf=mdf,currentdate=Sys.Date(),user="city"){ #疫点状态�
     ydzt.st$首报日期 <- format(ydzt.st$首报日期,"%m-%d")
     ydzt.st$末报日期 <- format(ydzt.st$末报日期,"%m-%d")
     ydzt.st$末首报间隔 <- as.numeric(ydzt.st$末首报间隔)
-    if (user=="county") {names(ydzt.st)[1,2] <- c("街道","居委")}
+    if (user=="county") {names(ydzt.st)[c(1,2)] <- c("街道","居委")}
     write.csv(ydzt.st,paste0("D:/","登革热疫点状态",currentdate,".csv"),row.names = FALSE)
     shell.exec(paste0("D:/","登革热疫点状态",currentdate,".csv"))
     return(ydzt.st)
