@@ -1,4 +1,4 @@
-﻿
+
 #### 历年截至某一日期同期比较函数
 #### To special day comparison among past years
 #### 2014年9月1日撰写
