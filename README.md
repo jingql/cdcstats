@@ -12,6 +12,7 @@ Statistics in infectious diseases for primary CDC in China
  
 ## 2. 数据读入
    数据读入和分析起始数据可以分为两个来源，一是疫情网原始数据开始分析，二是自行先整理规范的数据表，读入程序后进行分析。
+   
    2.1 疫情网原始导出数据读入（csv文件，数据原始变量及变量名称均保持不变，包括疫情网原始记录下载时前两行空格亦保持不变）   
    gzreport <- read.csv(file.choose(),skip=2,header=T,colClasses="character") #  读入按报告地区（全部）数据表
    wdreporttogz <- read.csv(file.choose(),skip=2,header=T,colClasses="character") # 读入外地报本地（全部）数据表
